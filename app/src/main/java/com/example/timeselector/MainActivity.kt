@@ -1,8 +1,10 @@
 package com.example.timeselector
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,76 +16,58 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.AlignmentLine
+import androidx.compose.ui.layout.FirstBaseline
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.timeselector.ui.theme.TimeSelectorTheme
 
 class MainActivity : ComponentActivity() {
+
+    private val tag = "MainActivity"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             TimeSelectorTheme {
 
-                val list = listOf(1, 2, 3, 4, 5, 6, 7, 8, 9)
+                Text(
+                    text = "Hello World",
+                    fontSize = 40.sp,
+                    modifier = Modifier
+                        .background(Color.Gray)
+                        .firstBaselineToTop(100.dp)
+                )
 
-                Box {
-                    Spacer(modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .fillMaxWidth()
-                        .height(75.dp)
-                        .drawBehind {
-                            drawRect(Color.Gray)
-                        })
-                    Spacer(modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .fillMaxWidth()
-                        .height(75.dp)
-                        .drawBehind {
-                            drawRect(Color.Gray)
-                        })
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(30.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentSize()
-                    ) {
-                        LazyColumn(modifier = Modifier.height(200.dp)) {
-                            items(list) {
-                                Text(
-                                    text = it.toString(),
-                                    fontSize = 36.sp
-                                )
-                            }
-                        }
-                        Text(
-                            text = ":",
-                            fontSize = 40.sp
-                        )
-                        LazyColumn(modifier = Modifier.height(200.dp)) {
-                            items(list) {
-                                Text(
-                                    text = it.toString(),
-                                    fontSize = 36.sp
-                                )
-                            }
-                        }
-                        Text(
-                            text = ":",
-                            fontSize = 40.sp
-                        )
-                        LazyColumn(modifier = Modifier.height(200.dp)) {
-                            items(list) {
-                                Text(
-                                    text = it.toString(),
-                                    fontSize = 36.sp
-                                )
-                            }
-                        }
-                    }
+
+                Column() {
+                    
                 }
             }
         }
     }
+
+    private fun Modifier.firstBaselineToTop(
+        firstBaselineToTop: Dp
+    ) = layout { measurable, constraints ->
+        // Measure the composable
+        val placeable = measurable.measure(constraints)
+
+        // Check the composable has a first baseline
+        check(placeable[FirstBaseline] != AlignmentLine.Unspecified)
+        val firstBaseline = placeable[FirstBaseline]
+
+        // Height of the composable with padding - first baseline
+        val placeableY = firstBaselineToTop.roundToPx() - firstBaseline
+        val height = placeable.height + placeableY
+        layout(placeable.width, height) {
+            // Where the composable gets placed
+            placeable.placeRelative(0, placeableY)
+        }
+    }
+
 }
+
